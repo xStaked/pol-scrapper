@@ -1,11 +1,7 @@
 import puppeteer from "puppeteer";
 
 async function searchGoogle(query, pageCount = 5) {
-  const browser = await puppeteer.launch({
-    headless: false,
-    defaultViewport: null,
-    args: ["--start-maximized"],
-  });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const links = [];
 
@@ -38,24 +34,18 @@ async function searchGoogle(query, pageCount = 5) {
 }
 
 async function collectEmails(links, minimumCount = 10, timeout = 30000) {
-  const browser = await puppeteer.launch({
-    headless: false,
-    defaultViewport: null,
-    args: ["--start-maximized"],
-  });
+  const browser = await puppeteer.launch();
   const collectedEmails = [];
 
   try {
     for (const link of links) {
       const page = await browser.newPage();
 
-      // Configurar tiempo de espera para la carga de la página
       await page.setDefaultNavigationTimeout(timeout);
 
       try {
         await page.goto(link);
 
-        // Realizar la extracción solo si la página se carga correctamente
         const result = await page.evaluate(() => {
           const footerElement = document.querySelector("footer");
           if (!footerElement) {
@@ -77,8 +67,6 @@ async function collectEmails(links, minimumCount = 10, timeout = 30000) {
         }
       } catch (error) {
         console.error("Error during page navigation:", error.message);
-        // Puedes manejar la situación de error según tus necesidades
-        // Por ejemplo, podrías registrar el error, continuar con el siguiente enlace, etc.
       } finally {
         await page.close();
       }
@@ -92,11 +80,14 @@ async function collectEmails(links, minimumCount = 10, timeout = 30000) {
   return collectedEmails;
 }
 
-// Example usage
 (async () => {
   const query = "agencias de transporte en cancun";
   const googleLinks = await searchGoogle(query, 5);
-  console.log(googleLinks)
+  console.log(googleLinks);
   const collectedEmails = await collectEmails(googleLinks, 10);
   console.log(collectedEmails);
 })();
+
+// {headless: false,
+// defaultViewport: null,
+// args: ["--start-maximized"]}
